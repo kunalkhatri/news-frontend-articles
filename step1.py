@@ -1,7 +1,7 @@
 from env import SECRET_KEY
 import openai, feedparser, os
 import urllib.parse
-
+from datetime import datetime
 openai.api_key = SECRET_KEY
 
 def get_ndtv_articles():
@@ -22,7 +22,7 @@ def get_ndtv_articles():
     return articles
 def generate_chat_response(prompt):
     
-    # return "Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo "
+    return "Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo "
     """
     Generates a chat response from OpenAI given a prompt and returns the response.
     """
@@ -47,18 +47,21 @@ index = open("articles/index.html","w")
 index_header = open("index_header.html","r")
 
 index.write(index_header.read())
+current_datetime = datetime.now().strftime("%a %d %b %y %H:%M %Z")
+index.write(f"<h3>News articles summarised on {current_datetime}</h3>")
 # Example usage
 articles = get_ndtv_articles()
 file_index = 1
 for article in articles:
     print (f"Now caching {article['title']}")
     filename = str(file_index) + ".html"
-    article_text = generate_chat_response(f"summarise article '{article['link']}' for a 10 year old ")
+    article_text = generate_chat_response(f"summarise article '{article['link']}' in upto 500 words ")
     file = open(os.path.join("articles", filename),"w")
     file.write(header_html)
     file.write(f"<h3>{article['title']}</h3><p>")
     file.write(article_text.replace("\n","<br/>"))
     file.write(f"</p><a href='{article['link']}' target='_blank'> Link to original article</a> ")
+    file.write(f"<p> Article summarised on {current_datetime} </p> ")
     file.write(footer_html)
     file.close()
     index.write(f"<a href='{filename}'>{article['title']} </a> ")
