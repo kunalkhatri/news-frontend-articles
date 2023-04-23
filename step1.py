@@ -51,6 +51,7 @@ index.write(index_header.read())
 articles = get_ndtv_articles()
 file_index = 1
 for article in articles:
+    print (f"Now caching {article['title']}")
     filename = str(file_index) + ".html"
     article_text = generate_chat_response(f"summarise article '{article['link']}' for a 10 year old ")
     file = open(os.path.join("articles", filename),"w")
