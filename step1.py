@@ -22,49 +22,54 @@ def get_ndtv_articles():
     return articles
 def generate_chat_response(prompt):
     
-    # return "Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo Boogalo booglaoo "
-    """
-    Generates a chat response from OpenAI given a prompt and returns the response.
-    """
     response = openai.Completion.create(
-    model="text-davinci-003",
-    prompt=f"rephrase following article for college level reading levels in 200 words '{prompt}'",
-    temperature=1,
-    max_tokens=1002,
-    top_p=1,
-    frequency_penalty=0.5,
-    presence_penalty=0
+        model="text-davinci-003",
+        prompt=f"rephrase following article for college level reading levels in 200 words '{prompt}'",
+        temperature=1,
+        max_tokens=1002,
+        top_p=1,
+        frequency_penalty=0.5,
+        presence_penalty=0
     )
     return response.choices[0].text.strip()
 
 header = open("header.html","r")
 header_html = header.read()
 
+current_datetime = datetime.now().strftime("%a %d %b %y %H:%M")
+
 footer = open("footer.html","r")
 footer_html = footer.read()
+index_text = []
 
-index = open("articles/index.html","w")
-index_header = open("index_header.html","r")
-
-index.write(index_header.read())
-current_datetime = datetime.now().strftime("%a %d %b %y %H:%M %Z")
-index.write(f"<h3>News articles summarised on {current_datetime}</h3>")
 # Example usage
 articles = get_ndtv_articles()
+articles_content = []
 file_index = 1
 for article in articles:
     print (f"Now caching {article['title']}")
     filename = str(file_index) + ".html"
     article_text = generate_chat_response(f"summarise article '{article['link']}' in upto 500 words ")
-    file = open(os.path.join("articles", filename),"w")
+    articles_content.append([filename,article['title'],article_text,article['link']])
+    index_text.append(f"<a href='{filename}'>{article['title']} </a> ")
+    file_index = file_index + 1
+
+index = open("articles/index.html","w")
+index_header = open("index_header.html","r")
+index.write(index_header.read())
+index.write(f"<h3>News articles summarised on {current_datetime}</h3>")
+for line in index_text:
+    index.write(line)
+index.close()
+
+file_index = 1
+for content in articles_content:
+    file = open(os.path.join("articles", content[0]),"w")
     file.write(header_html)
-    file.write(f"<h3>{article['title']}</h3><p>")
-    file.write(article_text.replace("\n","<br/>"))
-    file.write(f"</p><a href='{article['link']}' target='_blank'> Link to original article</a> ")
+    file.write(f"<h3>{content[1]}</h3><p>")
+    file.write(content[2].replace("\n","<br/>"))
+    file.write(f"</p><a href='{content[3]}' target='_blank'> Link to original article</a> ")
     file.write(f"<p> Article summarised on {current_datetime} </p> ")
     file.write(footer_html)
     file.close()
-    index.write(f"<a href='{filename}'>{article['title']} </a> ")
     file_index = file_index + 1
-    
-index.close()
