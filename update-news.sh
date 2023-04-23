@@ -1,4 +1,4 @@
-source venv/bin/activate
+source ./venv/bin/activate
 python step1.py
 
 current_date_time=$(date)
